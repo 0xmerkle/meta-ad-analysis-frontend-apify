@@ -1,0 +1,30 @@
+{
+    "name": "meta-ad-analysis-frontend",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "eslint .",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@ai-sdk/anthropic": "^3.0.82",
+        "ai": "^6.0.200",
+        "next": "^16.2.2",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "twelvelabs-js": "^1.2.7",
+        "zod": "^4.4.3"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.0",
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "eslint": "^9.0.0",
+        "eslint-config-next": "^16.2.2",
+        "typescript": "^6.0.0"
+    }
+}
