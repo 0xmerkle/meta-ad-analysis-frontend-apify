@@ -314,6 +314,19 @@ li + li {
     color: var(--text);
 }
 
+.clearButton {
+    flex-shrink: 0;
+    border-color: var(--line);
+    color: var(--muted);
+    background: transparent;
+}
+
+.clearButton:hover:not(:disabled) {
+    border-color: var(--error, #e05252);
+    color: var(--error, #e05252);
+    background: transparent;
+}
+
 .overviewGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

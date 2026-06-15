@@ -6,7 +6,7 @@ interface Clip {
     start: number;
     end: number;
     score: number;
-    text?: string; // transcription text found at this moment, if any
+    text?: string;
 }
 
 interface TLDataItem {
@@ -49,8 +49,6 @@ export function createInterrogateStream(
     indexId: string,
     videoId: string,
 ) {
-    console.log('[interrogate] stream start — indexId=%s videoId=%s messages=%d', indexId, videoId, messages.length);
-
     const system = buildSystem(indexId, videoId);
 
     return streamText({
@@ -65,8 +63,6 @@ export function createInterrogateStream(
                     query: z.string().describe('Natural language description of what to find in the video'),
                 }),
                 execute: async ({ query }: { query: string }): Promise<{ clips: Clip[] }> => {
-                    console.log('[interrogate] searchVideo query="%s"', query);
-
                     // TwelveLabs search requires multipart/form-data — arrays as repeated fields.
                     // Do NOT set Content-Type manually; fetch sets it with the boundary automatically.
                     const form = new FormData();
@@ -86,44 +82,13 @@ export function createInterrogateStream(
                         body: form,
                     });
 
-                    console.log('[interrogate] TwelveLabs status: %d', res.status);
+                    const raw = (await res.json()) as TwelveLabsSearchResponse;
 
-                    const raw = await res.json() as TwelveLabsSearchResponse;
-                    console.log("Raw response", raw)
+                    if (!res.ok) return { clips: [] };
 
-                    if (!res.ok) {
-                        console.error('[interrogate] TwelveLabs error: %s', JSON.stringify(raw));
-                        return { clips: [] };
-                    }
-
-                    console.log('[interrogate] TwelveLabs raw data (first item): %s', JSON.stringify(raw.data?.[0]));
-
-                    const clips = extractClips(raw.data ?? []).slice(0, 5);
-
-                    console.log(
-                        '[interrogate] extracted %d clips: %s',
-                        clips.length,
-                        clips
-                            .map((c) => `${c.start.toFixed(1)}s–${c.end.toFixed(1)}s text="${c.text ?? ''}"`)
-                            .join(' | '),
-                    );
-
-                    return { clips };
+                    return { clips: extractClips(raw.data ?? []).slice(0, 5) };
                 },
             }),
-        },
-        onStepFinish(step) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const s = step as any;
-            const toolCalls = s.toolCalls ?? [];
-            const toolResults = s.toolResults ?? [];
-            console.log('[interrogate] step — toolCalls=%d text=%d chars', toolCalls.length, s.text?.length ?? 0);
-            if (toolCalls.length) {
-                console.log('[interrogate] tool calls: %s', JSON.stringify(toolCalls.map((t: any) => ({ tool: t.toolName, input: t.input }))));
-            }
-            if (toolResults.length) {
-                console.log('[interrogate] tool results: %s', JSON.stringify(toolResults.map((r: any) => r.output ?? r.result)));
-            }
         },
         stopWhen: stepCountIs(5),
     });

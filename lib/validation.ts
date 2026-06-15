@@ -15,7 +15,7 @@ export function parseAnalyzeRequest(value: unknown): AnalyzeRequest {
         maxCompetitorAds: clampNumber(input.maxCompetitorAds, 1, 500, 100),
         topVideoAdsToAnalyze: clampNumber(input.topVideoAdsToAnalyze, 1, 20, 3),
         activeStatus: input.activeStatus === 'inactive' ? 'inactive' : 'active',
-        analysisMode: input.analysisMode === 'sample' || input.analysisMode === 'rank-only' ? input.analysisMode : 'full',
+        analysisMode: input.analysisMode === 'rank-only' ? 'rank-only' : 'full',
     };
 }
 

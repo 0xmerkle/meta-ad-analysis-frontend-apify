@@ -1,4 +1,4 @@
-export type AnalysisMode = 'sample' | 'rank-only' | 'full';
+export type AnalysisMode = 'rank-only' | 'full';
 export type ActiveStatus = 'active' | 'inactive';
 
 export interface AnalyzeRequest {

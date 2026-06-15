@@ -38,10 +38,8 @@ function fmtTime(s: number): string {
     return m > 0 ? `${m}:${sec.padStart(4, '0')}` : `${sec}s`;
 }
 
-// Parses agent text and converts timestamp mentions (e.g. "4.5–9 seconds") into clickable seek buttons.
 function renderContent(text: string, onSeek: (start: number) => void): React.ReactNode {
-    const clean = text.replace(/\*\*/g, ''); // strip markdown bold
-    // Matches "4.5-9 seconds", "4.5–9.5 seconds", "4.5 - 9 second"
+    const clean = text.replace(/\*\*/g, '');
     const TIMESTAMP = /(\d+(?:\.\d+)?)\s*[–\-]\s*(\d+(?:\.\d+)?)\s*seconds?/g;
     const nodes: React.ReactNode[] = [];
     const k = { v: 0 };
@@ -158,14 +156,12 @@ export function InterrogateModal({ ad, onClose }: { ad: TopAd; onClose: () => vo
                                 clips = chunk.output.clips;
                             }
                         } catch {
-                            // ignore malformed chunks
+                            // intentional no-op
                         }
                     }
                 }
 
                 if (clips.length > 0) {
-                    // Seek to earliest clip — hooks/first moments are at the start of the video,
-                    // and TwelveLabs' relevance rank often picks a mid-video clip over the actual opening.
                     const earliest = [...clips].sort((a, b) => a.start - b.start)[0];
                     seekToClip(earliest);
                     setMessages((prev) => {

@@ -142,6 +142,17 @@ export default function Home() {
         }
     }
 
+    function clearState() {
+        if (pollRef.current) clearTimeout(pollRef.current);
+        setReport(null);
+        setRunId(null);
+        setConsoleUrl(null);
+        setRunStatus(null);
+        setError(null);
+        setIsLoading(false);
+        window.localStorage.removeItem(LAST_RESULT_STORAGE_KEY);
+    }
+
     function exportJson() {
         if (!report) return;
         const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
@@ -158,9 +169,9 @@ export default function Home() {
             <section className="hero">
                 <div>
                     <p className="eyebrow">Apify · Meta Ad Intelligence</p>
-                    <h1>Ad Competitor Analysis</h1>
+                    <h1>Ad Creative Analysis</h1>
                     <p className="heroCopy">
-                        Enter competitor Meta pages to generate a ranked creative intelligence report.
+                        Enter any brand's Meta pages to generate a ranked creative intelligence report.
                     </p>
                 </div>
                 <div className="heroMeta">
@@ -171,7 +182,7 @@ export default function Home() {
             <section className="grid">
                 <form className="panel formPanel" onSubmit={runAnalysis}>
                     <label>
-                        Competitor Facebook / Meta URLs
+                        Facebook / Meta Page URLs
                         <textarea
                             value={competitors}
                             onChange={(e) => setCompetitors(e.target.value)}
@@ -219,15 +230,21 @@ export default function Home() {
                             value={analysisMode}
                             onChange={(e) => setAnalysisMode(e.target.value as AnalysisMode)}
                         >
-                            <option value="full">Full transcript + vision</option>
+                            <option value="full">Deep analysis (TwelveLabs)</option>
                             <option value="rank-only">Rank only</option>
-                            <option value="sample">Sample data</option>
                         </select>
                     </label>
 
-                    <button type="submit" disabled={isLoading}>
-                        {isLoading ? 'Running...' : 'Run analysis'}
-                    </button>
+                    <div className="row">
+                        <button type="submit" disabled={isLoading}>
+                            {isLoading ? 'Running...' : 'Run analysis'}
+                        </button>
+                        {(report || error) && !isLoading ? (
+                            <button type="button" className="clearButton" onClick={clearState}>
+                                Clear
+                            </button>
+                        ) : null}
+                    </div>
 
                     {isLoading && runStatus ? (
                         <p className="statusLine">
@@ -256,7 +273,7 @@ function ReportView({ report, onExportJson }: { report: Report | null; onExportJ
         return (
             <section className="panel emptyState">
                 <h2>No report yet</h2>
-                <p>Run the actor to generate top ads, creative patterns, opportunities, and caveats.</p>
+                <p>Enter brand page URLs to generate top ads, creative patterns, and strategic insights.</p>
             </section>
         );
     }
